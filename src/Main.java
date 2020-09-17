@@ -7,52 +7,38 @@
  */
 
 import java.util.*;
-import java.util.stream.Collectors;
+
 
 public class Main {
     public static void main(String args []){
 
-        // request data from endpoint and parse it into data structure
+        // request data from endpoint and parse and shuffle it into data structures
         Loader loader = new Loader();
         loader.LoadAll();
 
+        // make queries to data
+        Controller controller = new Controller();
 
-        public List<Todo> getToDosSummaryPerUser(int userId){
-            Loader.todosPerUser.get(userId)
-                    .stream()
-                    .filter(todo -> !todo.getCompleted())
-                    .collect(Collectors.toList());
-        }
-
-        public Map<Integer,List<Todo>> getToDosSummary(){
-            HashMap<Integer ,List<Todo>> toDoSummary = null;
-            for(Integer userId : Loader.userById.keySet()){
-                toDoSummary.put(userId, getToDosSummaryPerUser(userId));
-            }
-
-            return toDoSummary;
+        // print completed to do for given user id
+        for(Todo todo : controller.getToDosSummaryPerUser(1)){
+             System.out.println(todo);
         }
 
 
-        public ArrayList<String> getPostsSummary(int userId){
-            ArrayList<String> emailsOnPosts = new ArrayList<>();
-            for(Post post : Loader.postsPerUser.get(userId)){
-                for(Comment comment : Loader.commentPerPosts.get(post.getId())){
-                    emailsOnPosts.add(comment.getEmail());
-                }
-            }
-            return emailsOnPosts;
+         //print completed to do for all users
+         for(Map.Entry<Integer, List<Todo>> pair : controller.getToDosSummary().entrySet()){
+             System.out.println(pair);
+         }
 
-        }
+         //print number of comments on each post for given user id (only more than zero)
+         for(Map.Entry<Integer, Integer> pair : controller.getPostsSummary(2).entrySet()){
+             System.out.println(pair);
+         }
 
-        public ArrayList<Album> getAlbumsByThreshold(int userId, int thrshold){
-            ArrayList<Album> specialAlbums = new ArrayList<>();
-            for(Album album : Loader.albumsPerUser.get(userId)){
-                if (Loader.photosPerAlbum.get(album.getId()).size() > thrshold){
-                    specialAlbums.add(album);
-                }
-            }
-        }
+         // print all albums of a specific user that contains more photos than a given threshold
+         for (Album album : controller.getAlbumsByThreshold(1, 49)){
+             System.out.println(album);
+         }
 
     }
 }
