@@ -1,7 +1,7 @@
 import java.util.Objects;
 
 public class User {
-    private String id;
+    private Integer id;
     private String name;
     private String username;
     private String email;
@@ -34,7 +34,7 @@ public class User {
         this.company = company;
     }
 
-    public User(String id, String name, String username, String email, Address address) {
+    public User(Integer id, String name, String username, String email, Address address) {
         this.id = id;
         this.name = name;
         this.username = username;
@@ -42,11 +42,11 @@ public class User {
         this.address = address;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

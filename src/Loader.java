@@ -3,6 +3,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class Loader {
@@ -12,6 +14,15 @@ public class Loader {
     private static Photo [] photos;
     private static Todo [] todos;
     private static User [] users;
+
+
+    public static HashMap<Integer, ArrayList<Post>> postsPerUser = new HashMap<>();
+    public static HashMap<Integer, ArrayList<Album>> albumsPerUser = new HashMap<>();
+    public static HashMap<Integer, ArrayList<Todo>> todosPerUser = new HashMap<>();
+    public static HashMap<Integer, ArrayList<Photo>> photosPerAlbum = new HashMap<>();
+    public static HashMap<Integer, ArrayList<Comment>> commentPerPosts = new HashMap<>();
+    public static HashMap<Integer, User> userById = new HashMap<>();
+
 
     public static void LoadAll() {
            HttpClient client = HttpClient.newHttpClient();
@@ -57,8 +68,11 @@ public class Loader {
     private static String parser(String responseBody){
         Gson gson = new Gson();
         posts = gson.fromJson(responseBody, Post[].class); // takes array of json objects and convert to array of java objects
-        for (int i = 0; i < posts.length; i++){
-            System.out.println(posts[i]);
+
+        // shuffle the results to appropriate hashmap
+        for(Post post : posts){
+            postsPerUser.putIfAbsent(post.getUserId(), new ArrayList<Post>());
+            postsPerUser.get(post.getUserId()).add(post);
         }
         return "";
     }
@@ -66,8 +80,11 @@ public class Loader {
     private static String parser1(String responseBody){
         Gson gson = new Gson();
         comments = gson.fromJson(responseBody, Comment[].class); // takes array of json objects and convert to array of java objects
-        for (int i = 0; i < comments.length; i++){
-            System.out.println(comments[i]);
+
+        // shuffle the results to appropriate hashmap
+        for(Comment comment : comments){
+            commentPerPosts.putIfAbsent(comment.getPostId(), new ArrayList<Comment>());
+            commentPerPosts.get(comment.getPostId()).add(comment);
         }
         return "";
     }
@@ -75,8 +92,10 @@ public class Loader {
     private static String parser2(String responseBody){
         Gson gson = new Gson();
         albums = gson.fromJson(responseBody, Album[].class); // takes array of json objects and convert to array of java objects
-        for (int i = 0; i < albums.length; i++){
-            System.out.println(albums[i]);
+
+        for(Album album : albums){
+            albumsPerUser.putIfAbsent(album.getUserId(), new ArrayList<Album>());
+            albumsPerUser.get(album.getUserId()).add(album);
         }
         return "";
     }
@@ -84,8 +103,10 @@ public class Loader {
     private static String parser3(String responseBody){
         Gson gson = new Gson();
         photos = gson.fromJson(responseBody, Photo[].class); // takes array of json objects and convert to array of java objects
-        for (int i = 0; i < photos.length; i++){
-            System.out.println(photos[i]);
+
+        for(Photo photo : photos){
+            photosPerAlbum.putIfAbsent(photo.getAlbumId(), new ArrayList<Photo>());
+            photosPerAlbum.get(photo.getAlbumId()).add(photo);
         }
         return "";
     }
@@ -93,8 +114,10 @@ public class Loader {
     private static String parser4(String responseBody){
         Gson gson = new Gson();
         todos = gson.fromJson(responseBody, Todo[].class); // takes array of json objects and convert to array of java objects
-        for (int i = 0; i < todos.length; i++){
-            System.out.println(todos[i]);
+
+        for(Todo todo : todos){
+            todosPerUser.putIfAbsent(todo.getUserId(), new ArrayList<Todo>());
+            todosPerUser.get(todo.getUserId()).add(todo);
         }
         return "";
     }
@@ -102,8 +125,9 @@ public class Loader {
     private static String parser5(String responseBody){
         Gson gson = new Gson();
         users = gson.fromJson(responseBody, User[].class); // takes array of json objects and convert to array of java objects
-        for (int i = 0; i < users.length; i++){
-            System.out.println(users[i].toString());
+
+        for(User user : users){
+            userById.put(user.getId(), user);
         }
         return "";
     }
